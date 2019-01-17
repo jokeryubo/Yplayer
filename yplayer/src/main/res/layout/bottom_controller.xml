@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:orientation="horizontal"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp"
+    android:id="@+id/bottom_controller"
+    android:layout_height="match_parent">
+ <ImageView
+     android:layout_width="wrap_content"
+     android:layout_height="wrap_content"
+     android:src="@drawable/ic_player_start"
+     android:id="@+id/playAndPause"
+     android:padding="10dp"
+     android:layout_gravity="center_vertical"
+     />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/white"
+        android:textSize="12sp"
+        android:id="@+id/currentPosition"
+        android:layout_gravity="center_vertical"
+        android:text="00:00"/>
+
+    <SeekBar
+        android:id="@+id/seek"
+        style="@android:style/Widget.Holo.SeekBar"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="3dp"
+        android:layout_marginRight="3dp"
+        android:max="100" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/white"
+        android:textSize="12sp"
+        android:id="@+id/totalPosition"
+        android:layout_marginRight="5dp"
+        android:layout_gravity="center_vertical"
+        android:text="00:00"/>
+</LinearLayout>

@@ -1,0 +1,34 @@
+android{
+    signingConfigs{
+        custom {
+            storeFile file("../dftc_global_sign.jks")
+            storePassword "dftc@123"
+            keyAlias 'default'
+            keyPassword 'dftc@123'
+        }
+        zhongwu {
+            storeFile file("../dftc_global_sign.jks")
+            storePassword "dftc@123"
+            keyAlias 'zhongwu'
+            keyPassword 'dftc@123'
+        }
+        huawei3716 {
+            storeFile file("../dftc_global_sign.jks")
+            storePassword "dftc@123"
+            keyAlias 'huawei3716'
+            keyPassword 'dftc@123'
+        }
+        huaweik3v2 {
+            storeFile file("../dftc_global_sign.jks")
+            storePassword "dftc@123"
+            keyAlias 'huaweik3v2'
+            keyPassword 'dftc@123'
+        }
+        rk3288 {
+            storeFile file("../dftc_global_sign.jks")
+            storePassword "dftc@123"
+            keyAlias 'rk3288'
+            keyPassword 'dftc@123'
+        }
+    }
+}

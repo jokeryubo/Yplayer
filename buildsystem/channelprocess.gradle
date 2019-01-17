@@ -1,0 +1,41 @@
+android {
+
+    def archiveBuildTypes = ["release", "debug","qa"]
+
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            if ((variant.buildType.name.contains(archiveBuildTypes[0]) || variant.buildType.name.contains(archiveBuildTypes[1])||variant.buildType.name.contains(archiveBuildTypes[2]))&&!variant.buildType.name.contains("universal")&&!output.outputFile.name.contains("universal")) {
+                def DIST_DIRECTORY;
+                DIST_DIRECTORY = "../build/output/${variant.buildType.name}"
+                // Move output into DIST_DIRECTORY
+                print "buildtype name is:${variant.buildType.name}\n"
+                print "variant  name is:${variant.name.capitalize()}\n"
+                def taskSuffix = variant.name.capitalize()
+                def assembleTaskName = "assemble${taskSuffix}"
+                if (tasks.findByName(assembleTaskName) && copyTaskSwitch) {
+                    def copyAPKTask = tasks.create(name: "archive${taskSuffix}", type: org.gradle.api.tasks.Copy, overwrite: true) {
+                        description "Archive/copy APK and mappings.txt to a versioned folder."
+                        print "Copying APK&mappings.txt from: ${buildDir}\n"
+                        print "flavorname is ${variant.flavorName}\n"
+                        from("${buildDir}") {
+                            include "**/mapping/${variant.buildType.name}/mapping.txt"
+                            include "**/apk/${output.outputFile.name}"
+                            include "**/apk/${variant.flavorName}/${variant.buildType.name}/${output.outputFile.name}"
+                        }
+                        into DIST_DIRECTORY
+                        eachFile { file ->
+                            //Update output filename
+                            def versionName=variant.versionName
+                            versionName=versionName.replace("_v_","_${variant.flavorName}_${variant.buildType.name}_v_")
+                            file.name = "${versionName}.apk"
+                            file.path = file.name // so we have a "flat" copy
+                        }
+                        includeEmptyDirs = false
+                    }
+                    tasks[assembleTaskName].finalizedBy = [copyAPKTask]
+                }
+            }
+        }
+    }
+
+}
