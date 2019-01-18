@@ -10,6 +10,22 @@
         android:layout_height="match_parent"
         android:layout_centerInParent="true"
         android:id="@+id/textureView"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/top_controller"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="13sp"
+            android:text="32131231"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="15dp"
+            android:textColor="@android:color/white"
+            android:id="@+id/videoName"
+            />
+    </RelativeLayout>
 
     <ImageView
         android:layout_width="wrap_content"
@@ -24,4 +40,5 @@
         android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
         android:layout_height="60dp"/>
+
 </RelativeLayout>

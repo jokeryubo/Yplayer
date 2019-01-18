@@ -15,8 +15,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.yub.yplayer.R;
 import com.yub.yplayer.utils.LogUtils;
@@ -41,6 +43,9 @@ public class VideoFragment extends Fragment implements View.OnClickListener, IVi
     private ImageView Img_Pause;
     private SeekBar mSeekBar;
     private LinearLayout mBottomController;
+    private TextView TV_videoName;
+    private RelativeLayout RL_topController;
+
 
     public VideoFragment() {
     }
@@ -57,11 +62,16 @@ public class VideoFragment extends Fragment implements View.OnClickListener, IVi
        // 获取传过来的第三方的视频路径
         String action = getActivity().getIntent().getAction();
         if (Intent.ACTION_VIEW.equals(action)) {
-            String str = getActivity().getIntent().getData().toString() ;
-            LogUtils.dLog(TAG ,getActivity().getIntent().getData() + "");
+            Uri uri = getActivity().getIntent().getData() ;
+            String str =uri .toString() ;
+            if (uri != null && str.startsWith("content")){
+                str = Utils.getRealPathFromUri(getContext() ,uri);
+            }
+
+            LogUtils.dLog(TAG ,  uri.getPath()+"");
             if (!TextUtils.isEmpty(str)){
                 videoPath = str ;
-
+                TV_videoName.setText(Utils.getVideoName(uri.getPath()));
                 mVideoTextureView.setVideoPath(videoPath);
             }
         }
@@ -84,7 +94,8 @@ public class VideoFragment extends Fragment implements View.OnClickListener, IVi
         TV_Total = view.findViewById(R.id.totalPosition);
         mSeekBar = view.findViewById(R.id.seek);
         mBottomController = view.findViewById(R.id.bottom_controller);
-
+        TV_videoName =view.findViewById(R.id.videoName);
+        RL_topController = view.findViewById(R.id.top_controller);
 
         mVideoTextureView.setVideoPlayer(this);
         mVideoTextureView.setOnClickListener(this);
@@ -95,6 +106,7 @@ public class VideoFragment extends Fragment implements View.OnClickListener, IVi
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 int progress = seekBar.getProgress();
                 if (b){
+                    LogUtils.dLog(TAG ,"Progress :"+ progress);
                     mVideoTextureView.seekto(progress);
                 }
             }
@@ -122,14 +134,12 @@ public class VideoFragment extends Fragment implements View.OnClickListener, IVi
             case R.id.screen_change:
                 break;
             case R.id.playAndPause:
-                if (mVideoHelper.checkPlayState()){
-                    Img_Pause.setImageResource(R.drawable.ic_player_pause);
-                }else {
-                    Img_Pause.setImageResource(R.drawable.ic_player_start);
-                }
+                if (isPlaying())
+                    pause();
+                else
+                    startPlay();
                 break;
             case R.id.textureView:
-                 mVideoTextureView.pause();
                 break;
                 default:
                     break;
@@ -138,13 +148,13 @@ public class VideoFragment extends Fragment implements View.OnClickListener, IVi
 
     @Override
     public void startPlay() {
+        Img_Pause.setImageResource(R.drawable.ic_player_start);
         mVideoTextureView.start();
     }
 
     @Override
     public void stopPlay() {
         mVideoTextureView.stop();
-
     }
 
     @Override
@@ -170,6 +180,7 @@ public class VideoFragment extends Fragment implements View.OnClickListener, IVi
     @Override
     public void pause() {
         mVideoTextureView.pause();
+        Img_Pause.setImageResource(R.drawable.ic_player_pause);
     }
 
     @Override
@@ -195,4 +206,17 @@ public class VideoFragment extends Fragment implements View.OnClickListener, IVi
         mSeekBar.setProgress((int) msec);
     }
 
+    @Override
+    public void onCompletelistener() {
+        mVideoTextureView.stop();
+        getActivity().finish();
+    }
+
+    @Override
+    public void onErrorListener(int what, int extra) {
+        mVideoTextureView.stop();
+        LogUtils.eLog(TAG,"what:"+what+" extra:"+extra);
+        Toast.makeText(getContext() ,"播放错误",Toast.LENGTH_SHORT).show();
+        getActivity().finish();
+    }
 }

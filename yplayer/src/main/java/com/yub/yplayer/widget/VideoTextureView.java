@@ -20,6 +20,7 @@ import tv.danmaku.ijk.media.player.IjkMediaPlayer;
 
 /*
  * create by yubo on 2019/01/07
+ *  https://github.com/Bilibili/ijkplayer
  */
 public class VideoTextureView extends TextureView implements TextureView.SurfaceTextureListener, IVideoController {
 
@@ -107,13 +108,22 @@ public class VideoTextureView extends TextureView implements TextureView.Surface
         //开启硬解码
         // ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec", 1);
         mMediaPlayer = ijkMediaPlayer;
-
-            mMediaPlayer.setOnPreparedListener(mOnPreparedListener);
-//            mMediaPlayer.setOnInfoListener(listener);
-            mMediaPlayer.setOnSeekCompleteListener(mOnSeekCompleteListener);
-//            mMediaPlayer.setOnBufferingUpdateListener(listener);
-            mMediaPlayer.setOnErrorListener(mOnErrorListener);
+        mMediaPlayer.setOnPreparedListener(mOnPreparedListener);
+//      mMediaPlayer.setOnInfoListener(listener);
+        mMediaPlayer.setOnSeekCompleteListener(mOnSeekCompleteListener);
+//      mMediaPlayer.setOnBufferingUpdateListener(listener);
+        mMediaPlayer.setOnErrorListener(mOnErrorListener);
+        mMediaPlayer.setOnCompletionListener(mOnCompletionListener);
     }
+    private IMediaPlayer.OnCompletionListener mOnCompletionListener = new IMediaPlayer.OnCompletionListener() {
+        @Override
+        public void onCompletion(IMediaPlayer iMediaPlayer) {
+            if (mVideoPlayer != null){
+                mVideoPlayer.onCompletelistener();
+            }
+        }
+    };
+
     private IMediaPlayer.OnPreparedListener mOnPreparedListener = new IMediaPlayer.OnPreparedListener() {
         @Override
         public void onPrepared(IMediaPlayer mp) {
@@ -126,12 +136,21 @@ public class VideoTextureView extends TextureView implements TextureView.Surface
             mMediaPlayer.start();
         }
     };
-    private IMediaPlayer.OnSeekCompleteListener mOnSeekCompleteListener = (mediaPlayer) ->{
+    private IMediaPlayer.OnSeekCompleteListener mOnSeekCompleteListener = new IMediaPlayer.OnSeekCompleteListener() {
+        @Override
+        public void onSeekComplete(IMediaPlayer mp) {
+            LogUtils.dLog(TAG ," onSeekComplete --");
 
+        }
     };
-    private IMediaPlayer.OnErrorListener mOnErrorListener =(mediaPlayer ,what ,extra) -> {
-
-        return false;
+    private IMediaPlayer.OnErrorListener mOnErrorListener = new IMediaPlayer.OnErrorListener() {
+        @Override
+        public boolean onError(IMediaPlayer mp, int what, int extra) {
+            if (mVideoPlayer != null){
+                mVideoPlayer.onErrorListener(what ,extra);
+            }
+            return true;
+        }
     };
 
     @Override
@@ -169,12 +188,14 @@ public class VideoTextureView extends TextureView implements TextureView.Surface
         }
     }
     public void start() {
+        LogUtils.dLog(TAG ," start--------");
         if (mMediaPlayer != null) {
             mMediaPlayer.start();
             mHandler.sendEmptyMessage(GETPOSITION);
         }
     }
     public  void stop(){
+        LogUtils.dLog(TAG ," stop--------");
         if (mMediaPlayer != null){
             mMediaPlayer.stop();
             mMediaPlayer.setDisplay(null);
@@ -214,6 +235,7 @@ public class VideoTextureView extends TextureView implements TextureView.Surface
 
     @Override
     public void seekto(long sec) {
+        LogUtils.dLog(TAG ,"mMediaPlayer:"+mMediaPlayer);
         mMediaPlayer.seekTo(sec);
     }
 
@@ -233,6 +255,8 @@ public class VideoTextureView extends TextureView implements TextureView.Surface
     public interface VideoPlayer{
         void onVideoPrepared();
         void onPosition(long msec);
+        void onCompletelistener();
+        void onErrorListener(int what ,int extra);
     }
 
     public void setVideoPlayer(VideoPlayer videoPlayer) {

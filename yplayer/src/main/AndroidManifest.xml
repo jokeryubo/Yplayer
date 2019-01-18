@@ -27,7 +27,11 @@
                 tools:ignore="AppLinkUrlError">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <data android:mimeType="video/*"/>
+                <data android:mimeType="*/*"/>
+                <!--这个很重要,不然会拦截不到http请求-->
+                <data android:scheme="http" android:host="*" />
+                <data android:scheme="content" android:host="*" />
+                <data android:scheme="file" android:host="*" />
             </intent-filter>
         </activity>
     </application>
